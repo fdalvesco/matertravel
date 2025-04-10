@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home.dart'; // Certo, pois o arquivo se chama home.dart
+import 'home.dart';
 import 'dart:async';
 
 class PreloadPage extends StatefulWidget {
@@ -22,16 +22,17 @@ class _PreloadPageState extends State<PreloadPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/logo.png',
-              width: 150,
-              height: 150,
+            SizedBox(
+              width: 200,
+              height: 200,
+              child: Image.asset('assets/logo.png', fit: BoxFit.contain),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
             CircularProgressIndicator(),
           ],
         ),
