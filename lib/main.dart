@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'src/models/appdata.dart';
 import 'pages/preload.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppData.loadFavorites();
   runApp(MyApp());
 }
 
