@@ -1,70 +1,44 @@
 import 'package:flutter/material.dart';
-import '../widgets/citybox.dart';
 import 'place_details.dart';
 
 class CityPage extends StatelessWidget {
   final String cityName;
 
-  CityPage({required this.cityName});
-
-  final Map<String, List<Map<String, String>>> cityPlaces = {
-    'São Paulo': [
-      {
-        'name': 'Parque Ibirapuera',
-        'image': 'assets/ibirapuera.jpg',
-        'description': 'Um dos maiores parques urbanos do Brasil, com áreas verdes, museus e atividades ao ar livre.'
-      },
-      {
-        'name': 'Avenida Paulista',
-        'image': 'assets/paulista.jpg',
-        'description': 'Principal avenida de São Paulo, conhecida por centros culturais, lojas, empresas e eventos.'
-      },
-    ],
-    'Buenos Aires': [
-      {
-        'name': 'Caminito',
-        'image': 'assets/caminito.jpg',
-        'description': 'Rua colorida e turística em La Boca, famosa por sua arte, música e dançarinos de tango.'
-      },
-    ],
-    'Paris': [
-      {
-        'name': 'Torre Eiffel',
-        'image': 'assets/eiffel.jpg',
-        'description': 'Símbolo icônico da França, oferece uma vista panorâmica incrível de Paris.'
-      },
-    ],
-  };
+  const CityPage({super.key, required this.cityName});
 
   @override
   Widget build(BuildContext context) {
-    final places = cityPlaces[cityName] ?? [];
-
     return Scaffold(
-      appBar: AppBar(title: Text('Lugares em $cityName')),
+      appBar: AppBar(
+        title: Text(cityName),
+      ),
       body: ListView(
-        padding: EdgeInsets.all(10),
-        children: places.map((place) {
-          return GestureDetector(
+        children: [
+          ListTile(
+            leading: Image.asset(
+              'assets/ibirapuera.jpg',  // caminho correto
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+            ),
+            title: const Text('Parque Ibirapuera'),
+            subtitle: const Text('São Paulo - SP'),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PlaceDetailPage(
-                    name: place['name']!,
-                    imagePath: place['image']!,
-                    description: place['description']!,
+                  builder: (context) => const PlaceDetailPage(
+                    name: 'Parque Ibirapuera',
+                    imagePath: 'assets/ibirapuera.jpg',  // caminho correto
+                    description:
+                    'O Parque Ibirapuera é um dos parques urbanos mais importantes de São Paulo, conhecido por sua beleza e atividades culturais.',
                   ),
                 ),
               );
             },
-            child: CityBox(
-              name: place['name']!,
-              imagePath: place['image']!,
-              city: cityName,
-            ),
-          );
-        }).toList(),
+          ),
+          // Se quiser, você pode adicionar mais pontos turísticos aqui
+        ],
       ),
     );
   }
