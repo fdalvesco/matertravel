@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/citybox.dart';
 import '../src/models/appdata.dart';
-import 'place_details.dart';
 
 class FavoritesPage extends StatelessWidget {
   @override
@@ -16,24 +15,10 @@ class FavoritesPage extends StatelessWidget {
         itemCount: favoriteCities.length,
         itemBuilder: (context, index) {
           final city = favoriteCities[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PlaceDetailPage(
-                    name: city.placeName,
-                    imagePath: city.imagePath,
-                    description: city.description,
-                  ),
-                ),
-              );
-            },
-            child: CityBox(
-              name: city.placeName,
-              imagePath: city.imagePath,
-              city: city.city,
-            ),
+          return CityBox(
+            name: city.placeName,
+            imagePath: city.imagePath,
+            city: city.city,
           );
         },
       ),

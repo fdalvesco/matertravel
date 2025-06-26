@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../src/models/appdata.dart';
 
 class PlaceDetailPage extends StatefulWidget {
-  final String name;
-  final String imagePath;
-  final String description;
+  final City city;
 
-  const PlaceDetailPage({
-    super.key,
-    required this.name,
-    required this.imagePath,
-    required this.description,
-  });
+  const PlaceDetailPage({super.key, required this.city});
 
   @override
   State<PlaceDetailPage> createState() => _PlaceDetailPageState();
@@ -21,16 +15,17 @@ class PlaceDetailPage extends StatefulWidget {
 class _PlaceDetailPageState extends State<PlaceDetailPage> {
   bool isFavorite = false;
 
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = AppData.isFavorite(widget.city);
+  }
+
   Future<Position> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) throw 'Serviço de localização desativado.';
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw 'Serviço de localização desativado.';
-    }
-
-    permission = await Geolocator.checkPermission();
+    LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
@@ -48,9 +43,8 @@ class _PlaceDetailPageState extends State<PlaceDetailPage> {
   }
 
   void openGoogleMapsDirections(double latUser, double lonUser) async {
-    // Coordenadas fixas do Parque Ibirapuera
-    const double latDest = -23.5874;
-    const double lonDest = -46.6576;
+    const double latDest = -25.4429;
+    const double lonDest = -49.2768;
 
     final url = Uri.parse(
       'https://www.google.com/maps/dir/?api=1&origin=$latUser,$lonUser&destination=$latDest,$lonDest&travelmode=driving',
@@ -61,28 +55,31 @@ class _PlaceDetailPageState extends State<PlaceDetailPage> {
     }
   }
 
-  void toggleFavorite() {
+  void toggleFavorite() async {
+    await AppData.toggleFavorite(widget.city);
+
     setState(() {
-      isFavorite = !isFavorite;
+      isFavorite = AppData.isFavorite(widget.city);
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(isFavorite
-            ? '${widget.name} adicionado aos favoritos.'
-            : '${widget.name} removido dos favoritos.'),
+        content: Text(
+          isFavorite
+              ? '${widget.city.placeName} adicionado aos favoritos.'
+              : '${widget.city.placeName} removido dos favoritos.',
+        ),
       ),
     );
-
-    // Aqui você pode salvar no banco local, no shared_preferences, etc.
-    // Por enquanto, só exibe o aviso.
   }
 
   @override
   Widget build(BuildContext context) {
+    final city = widget.city;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.name),
+        title: Text(city.placeName),
         actions: [
           IconButton(
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
@@ -94,14 +91,14 @@ class _PlaceDetailPageState extends State<PlaceDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Image.asset(
-            widget.imagePath,
+            city.imagePath,
             fit: BoxFit.cover,
             height: 250,
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              widget.description,
+              city.description,
               style: const TextStyle(fontSize: 18),
             ),
           ),
@@ -117,7 +114,7 @@ class _PlaceDetailPageState extends State<PlaceDetailPage> {
                 );
               }
             },
-            child: const Text('Como chegar até o Parque Ibirapuera'),
+            child: const Text('Como chegar até o local'),
           ),
         ],
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../pages/home.dart'; // Importando a HomePage
-import '../pages/continent.dart';
-import '../pages/favorites.dart'; // Importando a página de Favoritos
+import '../pages/home.dart';
+import '../pages/listcity.dart';  // Importa a página das cidades
+import '../pages/favorites.dart';
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -26,13 +26,13 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.public),
-            title: Text('Escolher Continente'),
+            leading: Icon(Icons.explore),
+            title: Text('Explorar Destinos'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ContinentPage()),
+                MaterialPageRoute(builder: (context) => ListCityPage()),
               );
             },
           ),

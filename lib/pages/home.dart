@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/customdrawer.dart';
-import 'dart:async';
-import 'continent.dart';
+import 'listcity.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,16 +10,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   double _opacity = 0;
   bool _showLogo = false;
-  int _currentPhraseIndex = 0;
 
-  final List<String> _phrases = [
-    'Viajar é viver!',
-    'Explore o mundo com a gente!',
-    'Descubra novos destinos!',
-    'A aventura começa aqui!',
-    'Transforme sua viagem em experiência!',
-    'O seu guia de destinos'
-  ];
+  final String fixedPhrase = 'Sua aventura começa aqui!'; // Frase fixa
 
   @override
   void initState() {
@@ -33,14 +24,6 @@ class _HomePageState extends State<HomePage> {
 
     Future.delayed(Duration(milliseconds: 700), () {
       setState(() => _showLogo = true);
-    });
-
-    // Timer para trocar frases a cada 4 segundos
-    Timer.periodic(Duration(seconds: 4), (Timer timer) {
-      setState(() {
-        _currentPhraseIndex =
-            (_currentPhraseIndex + 1) % _phrases.length;
-      });
     });
   }
 
@@ -57,7 +40,7 @@ class _HomePageState extends State<HomePage> {
               duration: Duration(milliseconds: 800),
               opacity: _opacity,
               child: Text(
-                _phrases[_currentPhraseIndex],
+                fixedPhrase,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
@@ -84,7 +67,7 @@ class _HomePageState extends State<HomePage> {
               opacity: _opacity,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFF3701F), // Laranja da logo
+                  backgroundColor: Color(0xFFF3701F),
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -102,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ContinentPage()),
+                    MaterialPageRoute(builder: (context) => ListCityPage()),
                   );
                 },
               ),

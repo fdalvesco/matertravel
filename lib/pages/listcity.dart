@@ -2,24 +2,12 @@ import 'package:flutter/material.dart';
 import 'city.dart';
 
 class ListCityPage extends StatelessWidget {
-  final String continent;
-
-  ListCityPage({required this.continent});
-
-  final Map<String, List<String>> citiesByContinent = {
-    'América': ['São Paulo', 'Buenos Aires'],
-    'Europa': ['Paris', 'Londres'],
-    'Ásia': ['Tóquio', 'Pequim'],
-    'África': ['Cairo', 'Cidade do Cabo'],
-    'Oceania': ['Sydney', 'Auckland'],
-  };
+  final List<String> cities = ['Curitiba', 'Foz do Iguaçu'];
 
   @override
   Widget build(BuildContext context) {
-    final cities = citiesByContinent[continent] ?? [];
-
     return Scaffold(
-      appBar: AppBar(title: Text('Cidades da $continent')),
+      appBar: AppBar(title: Text('Conheça o Paraná')),
       body: ListView.builder(
         itemCount: cities.length,
         itemBuilder: (context, index) {
