@@ -1,122 +1,95 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'city.dart'; // Importa a classe City
 import '../src/models/appdata.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class PlaceDetailPage extends StatefulWidget {
-  final City city;
+class PlaceDetailsPage extends StatefulWidget {
+  final City place;
 
-  const PlaceDetailPage({super.key, required this.city});
+  const PlaceDetailsPage({required this.place, Key? key}) : super(key: key);
 
   @override
-  State<PlaceDetailPage> createState() => _PlaceDetailPageState();
+  State<PlaceDetailsPage> createState() => _PlaceDetailsPageState();
 }
 
-class _PlaceDetailPageState extends State<PlaceDetailPage> {
+class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   bool isFavorite = false;
 
   @override
   void initState() {
     super.initState();
-    isFavorite = AppData.isFavorite(widget.city);
+    isFavorite = AppData.isFavorite(widget.place);
   }
 
-  Future<Position> getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) throw 'Serviço de localização desativado.';
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw 'Permissão de localização negada';
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw 'Permissão de localização negada permanentemente';
-    }
-
-    return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-  }
-
-  void openGoogleMapsDirections(double latUser, double lonUser) async {
-    const double latDest = -25.4429;
-    const double lonDest = -49.2768;
-
-    final url = Uri.parse(
-      'https://www.google.com/maps/dir/?api=1&origin=$latUser,$lonUser&destination=$latDest,$lonDest&travelmode=driving',
-    );
-
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw 'Não foi possível abrir o Google Maps.';
-    }
-  }
-
-  void toggleFavorite() async {
-    await AppData.toggleFavorite(widget.city);
-
+  void _toggleFavorite() {
     setState(() {
-      isFavorite = AppData.isFavorite(widget.city);
+      if (isFavorite) {
+        AppData.removeFavorite(widget.place);
+      } else {
+        AppData.addFavorite(widget.place);
+      }
+      isFavorite = !isFavorite;
     });
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          isFavorite
-              ? '${widget.city.placeName} adicionado aos favoritos.'
-              : '${widget.city.placeName} removido dos favoritos.',
-        ),
-      ),
-    );
+  void _launchMaps() async {
+    final lat = widget.place.latitude;
+    final lng = widget.place.longitude;
+
+    final url = Uri.encodeFull(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Não foi possível abrir o mapa')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final city = widget.city;
+    final place = widget.place;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(city.placeName),
+        title: Text(place.placeName),
         actions: [
           IconButton(
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-            onPressed: toggleFavorite,
+            onPressed: _toggleFavorite,
+            color: isFavorite ? Colors.red : null,
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Image.asset(
-            city.imagePath,
-            fit: BoxFit.cover,
-            height: 250,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              city.description,
-              style: const TextStyle(fontSize: 18),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset(place.imagePath, fit: BoxFit.cover),
+            const SizedBox(height: 16),
+            Text(
+              place.placeName,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                final position = await getCurrentLocation();
-                openGoogleMapsDirections(position.latitude, position.longitude);
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Erro: $e')),
-                );
-              }
-            },
-            child: const Text('Como chegar até o local'),
-          ),
-        ],
+            Text(
+              place.city,
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 16),
+            Text(place.description),
+            const SizedBox(height: 24),
+            Center(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.directions),
+                label: const Text('Como chegar'),
+                onPressed: _launchMaps,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

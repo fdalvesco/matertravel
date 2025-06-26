@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../src/models/appdata.dart';
 import '../pages/place_details.dart';
+import '../pages/city.dart';
 
 class CityBox extends StatefulWidget {
   final String name;
@@ -21,11 +22,17 @@ class _CityBoxState extends State<CityBox> {
   late City currentCity;
 
   final Map<String, String> descriptions = {
-    'Parque Ibirapuera': 'O parque mais famoso da cidade reúne todo tipo de público...',
-    'Avenida Paulista': 'Um dos principais símbolos da capital, com cultura e lazer.',
-    'Caminito': 'Rua colorida e turística em La Boca, famosa por sua arte e tango.',
-    'Torre Eiffel': 'Símbolo icônico da França, com vista panorâmica de Paris.',
-    // Adicione outras descrições conforme necessário
+    // Curitiba
+    'Jardim Botânico': 'Um dos pontos mais famosos da cidade.',
+    'Ópera de Arame': 'Teatro com estrutura metálica única.',
+    'Centro Histórico': 'Região central com arquitetura antiga.',
+    'Teatro do Paiol': 'Espaço cultural tradicional da cidade.',
+    'Feira do Largo da Ordem': 'Feira tradicional com artesanato e gastronomia.',
+    'Museu Oscar Niemeyer': 'Museu de arte com arquitetura moderna.',
+    // Foz do Iguaçu
+    'Cataratas do Iguaçu': 'Maravilha natural do mundo.',
+    'Ice Bar': 'Bar feito inteiramente de gelo.',
+    'Iporã Lenda Show': 'Espetáculo cultural com lendas locais.',
   };
 
   @override
@@ -54,7 +61,7 @@ class _CityBoxState extends State<CityBox> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PlaceDetailPage(city: currentCity),
+              builder: (context) => PlaceDetailsPage(place: currentCity),
             ),
           );
         },
@@ -66,11 +73,10 @@ class _CityBoxState extends State<CityBox> {
             isFav ? Icons.favorite : Icons.favorite_border,
             color: isFav ? Colors.red : null,
           ),
-          onPressed: () async {
+          onPressed: () {
             setState(() {
               AppData.toggleFavorite(currentCity);
             });
-            await AppData.toggleFavorite(currentCity);
           },
         ),
       ),

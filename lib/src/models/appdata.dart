@@ -1,90 +1,125 @@
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class City {
-  final String placeName;
-  final String imagePath;
-  final String city;
-  final String description;
-  final double latitude;
-  final double longitude;
-
-  City({
-    required this.placeName,
-    required this.imagePath,
-    required this.city,
-    required this.description,
-    required this.latitude,
-    required this.longitude,
-  });
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is City && other.placeName == placeName;
-  }
-
-  @override
-  int get hashCode => placeName.hashCode;
-}
+import '../../pages/city.dart';
 
 class AppData {
+  static List<City> favorites = [];
+
+  static const String favoritesKey = 'favorites';
+
+  static Future<void> loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? favsJson = prefs.getStringList(favoritesKey);
+    if (favsJson != null) {
+      favorites = favsJson.map((jsonStr) {
+        final Map<String, dynamic> map = jsonDecode(jsonStr);
+        return City(
+          placeName: map['placeName'],
+          imagePath: map['imagePath'],
+          city: map['city'],
+          description: map['description'],
+          latitude: map['latitude'],
+          longitude: map['longitude'],
+        );
+      }).toList();
+    } else {
+      favorites = [];
+    }
+  }
+
+  static Future<void> saveFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> favsJson = favorites.map((city) => jsonEncode({
+      'placeName': city.placeName,
+      'imagePath': city.imagePath,
+      'city': city.city,
+      'description': city.description,
+      'latitude': city.latitude,
+      'longitude': city.longitude,
+    })).toList();
+    await prefs.setStringList(favoritesKey, favsJson);
+  }
+
+  static bool isFavorite(City city) {
+    return favorites.contains(city);
+  }
+
+  static void addFavorite(City city) {
+    if (!favorites.contains(city)) {
+      favorites.add(city);
+      saveFavorites();
+    }
+  }
+
+  static void removeFavorite(City city) {
+    favorites.remove(city);
+    saveFavorites();
+  }
+
+  static void toggleFavorite(City city) {
+    if (isFavorite(city)) {
+      removeFavorite(city);
+    } else {
+      addFavorite(city);
+    }
+  }
+
   static List<City> cities = [
     // Curitiba
     City(
       placeName: 'Jardim Botânico',
       imagePath: 'assets/jardim_botanico.jpg',
       city: 'Curitiba',
-      description: 'Um dos cartões-postais de Curitiba, com estufa icônica e jardins geométricos.',
-      latitude: -25.4322,
-      longitude: -49.2532,
+      description: 'Um dos pontos mais famosos da cidade.',
+      latitude: -25.4429,
+      longitude: -49.2406,
     ),
     City(
       placeName: 'Ópera de Arame',
-      imagePath: 'assets/opera_de_arame.jpg',
+      imagePath: 'assets/opera_arame.jpg',
       city: 'Curitiba',
-      description: 'Teatro com estrutura metálica cercado por natureza e um lago.',
-      latitude: -25.4436,
-      longitude: -49.2766,
+      description: 'Teatro com estrutura metálica única.',
+      latitude: -25.3846,
+      longitude: -49.2655,
     ),
     City(
       placeName: 'Centro Histórico',
       imagePath: 'assets/centro_historico.jpg',
       city: 'Curitiba',
-      description: 'Área charmosa com casarões antigos, igrejas e bares culturais.',
-      latitude: -25.4296,
-      longitude: -49.2710,
+      description: 'Região central com arquitetura antiga.',
+      latitude: -25.4293,
+      longitude: -49.2719,
     ),
     City(
       placeName: 'Teatro do Paiol',
       imagePath: 'assets/teatro_paiol.jpg',
       city: 'Curitiba',
-      description: 'Antigo paiol de pólvora transformado em espaço cultural.',
-      latitude: -25.4411,
-      longitude: -49.2646,
+      description: 'Espaço cultural tradicional da cidade.',
+      latitude: -25.4265,
+      longitude: -49.2595,
     ),
     City(
       placeName: 'Feira do Largo da Ordem',
-      imagePath: 'assets/largo_ordem.jpg',
+      imagePath: 'assets/feira_largo_ordem.jpg',
       city: 'Curitiba',
-      description: 'Feira tradicional com artesanato, comida e apresentações culturais aos domingos.',
-      latitude: -25.4321,
-      longitude: -49.2699,
+      description: 'Feira tradicional com artesanato e gastronomia.',
+      latitude: -25.4289,
+      longitude: -49.2677,
     ),
     City(
       placeName: 'Museu Oscar Niemeyer',
       imagePath: 'assets/museu_oscar_niemeyer.jpg',
       city: 'Curitiba',
-      description: 'Museu de arte moderna com arquitetura única em formato de olho.',
-      latitude: -25.4377,
-      longitude: -49.2743,
+      description: 'Museu de arte com arquitetura moderna.',
+      latitude: -25.4336,
+      longitude: -49.2663,
     ),
-
     // Foz do Iguaçu
     City(
       placeName: 'Cataratas do Iguaçu',
       imagePath: 'assets/cataratas.jpg',
       city: 'Foz do Iguaçu',
-      description: 'Uma das maiores e mais impressionantes quedas d’água do mundo.',
+      description: 'Maravilha natural do mundo.',
       latitude: -25.6953,
       longitude: -54.4367,
     ),
@@ -92,47 +127,17 @@ class AppData {
       placeName: 'Ice Bar',
       imagePath: 'assets/ice_bar.jpg',
       city: 'Foz do Iguaçu',
-      description: 'Bar feito totalmente de gelo, com temperatura abaixo de zero.',
-      latitude: -25.5697,
-      longitude: -54.5880,
+      description: 'Bar feito inteiramente de gelo.',
+      latitude: -25.5123,
+      longitude: -54.5912,
     ),
     City(
       placeName: 'Iporã Lenda Show',
-      imagePath: 'assets/ipora_show.jpg',
+      imagePath: 'assets/ipora_lenda_show.jpg',
       city: 'Foz do Iguaçu',
-      description: 'Espetáculo cultural que mostra a diversidade folclórica latino-americana.',
-      latitude: -25.5631,
-      longitude: -54.5863,
+      description: 'Espetáculo cultural com lendas locais.',
+      latitude: -25.5157,
+      longitude: -54.5834,
     ),
   ];
-
-  static List<City> favorites = [];
-
-  static const String _favoritesKey = 'favorites';
-
-  static Future<void> loadFavorites() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedList = prefs.getStringList(_favoritesKey) ?? [];
-
-    favorites = cities.where((city) => savedList.contains(city.placeName)).toList();
-  }
-
-  static Future<void> _saveFavorites() async {
-    final prefs = await SharedPreferences.getInstance();
-    final favoriteNames = favorites.map((c) => c.placeName).toList();
-    await prefs.setStringList(_favoritesKey, favoriteNames);
-  }
-
-  static Future<void> toggleFavorite(City city) async {
-    if (favorites.contains(city)) {
-      favorites.remove(city);
-    } else {
-      favorites.add(city);
-    }
-    await _saveFavorites();
-  }
-
-  static bool isFavorite(City city) {
-    return favorites.contains(city);
-  }
 }

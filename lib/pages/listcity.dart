@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'city.dart';
+import 'list_place.dart';
 
 class ListCityPage extends StatelessWidget {
   final List<String> cities = ['Curitiba', 'Foz do Iguaçu'];
@@ -7,7 +7,9 @@ class ListCityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Conheça o Paraná')),
+      appBar: AppBar(
+        title: Text('Destinos no Paraná'),
+      ),
       body: ListView.builder(
         itemCount: cities.length,
         itemBuilder: (context, index) {
@@ -17,7 +19,7 @@ class ListCityPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CityPage(cityName: cities[index]),
+                  builder: (context) => ListPlacePage(cityName: cities[index]),
                 ),
               );
             },
