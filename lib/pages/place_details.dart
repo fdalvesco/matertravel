@@ -35,15 +35,11 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   void _launchMaps() async {
     final lat = widget.place.latitude;
     final lng = widget.place.longitude;
+    final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
 
-    final url = Uri.encodeFull(
-        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
-
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Não foi possível abrir o mapa')),
+        const SnackBar(content: Text('Não foi possível abrir o mapa')),
       );
     }
   }
