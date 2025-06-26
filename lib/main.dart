@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'src/models/appdata.dart';
-import 'pages/home.dart';
+import 'pages/preload.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MaterTravel',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomePage(),
+      home: PreloadPage(), // INICIA pela tela de preload
     );
   }
 }
