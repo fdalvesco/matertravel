@@ -16,6 +16,15 @@ class City {
     required this.latitude,
     required this.longitude,
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is City && other.placeName == placeName;
+  }
+
+  @override
+  int get hashCode => placeName.hashCode;
 }
 
 class AppData {
